@@ -49,7 +49,4 @@ fn main() {
             window.handle_window_event(event);
         }
     }
-
-    //FIXME: panics with `GLFW Error: The GLFW library is not initialized`
-    //unsafe { glfw::ffi::glfwTerminate() }
 }
