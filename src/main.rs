@@ -33,6 +33,7 @@ fn main() {
     unsafe { gl::Viewport(0, 0, 800, 600) }
 
     window.set_key_polling(true);
+    window.set_framebuffer_size_polling(true);
     window.make_current();
 
     gl::ClearColor::load_with(|s| window.get_proc_address(s) as *const _);
