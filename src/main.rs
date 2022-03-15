@@ -12,7 +12,6 @@ impl WindowExt for glfw::Window {
             glfw::WindowEvent::FramebufferSize(width, height) => {
                 assert!(gl::Viewport::is_loaded());
                 unsafe { gl::Viewport(0, 0, width, height) };
-                println!("test");
             }
             _ => {}
         }
