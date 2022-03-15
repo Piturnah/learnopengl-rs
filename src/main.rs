@@ -1,52 +1,23 @@
-use gl;
-use glfw::{self, Action, Context, Key};
-
-trait WindowExt {
-    fn handle_window_event(&mut self, event: glfw::WindowEvent);
-}
-
-impl WindowExt for glfw::Window {
-    fn handle_window_event(&mut self, event: glfw::WindowEvent) {
-        match event {
-            glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => self.set_should_close(true),
-            glfw::WindowEvent::FramebufferSize(width, height) => {
-                assert!(gl::Viewport::is_loaded());
-                unsafe { gl::Viewport(0, 0, width, height) };
-            }
-            _ => {}
-        }
-    }
-}
+use std::io::{stdin, stdout, Write};
+mod hello_triangle;
+mod hello_window;
 
 fn main() {
-    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
-    glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
-    glfw.window_hint(glfw::WindowHint::OpenGlProfile(
-        glfw::OpenGlProfileHint::Core,
-    ));
-
-    let (mut window, events) = glfw
-        .create_window(800, 600, "LearnOpenGL", glfw::WindowMode::Windowed)
-        .expect("Failed to create GLFW window.");
-
-    gl::Viewport::load_with(|s| window.get_proc_address(s) as *const _);
-    unsafe { gl::Viewport(0, 0, 800, 600) }
-
-    window.set_key_polling(true);
-    window.set_framebuffer_size_polling(true);
-    window.make_current();
-
-    gl::ClearColor::load_with(|s| window.get_proc_address(s) as *const _);
-    gl::Clear::load_with(|s| window.get_proc_address(s) as *const _);
-    while !window.should_close() {
-        unsafe {
-            gl::ClearColor(0.2, 0.3, 0.3, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
-        }
-        window.swap_buffers();
-        glfw.poll_events();
-        for (_, event) in glfw::flush_messages(&events) {
-            window.handle_window_event(event);
-        }
+    print!(
+        "Enter project number:
+(* denotes an incomplete project)
+1. Hello Window
+2. Hello Triangle*
+> "
+    );
+    stdout().flush().unwrap();
+    let mut input = String::new();
+    match stdin().read_line(&mut input) {
+        Ok(_) => match input.strip_suffix("\n").unwrap() {
+            "1" => hello_window::run(),
+            "2" => hello_triangle::run(),
+            _ => eprintln!("Not a valid option"),
+        },
+        Err(e) => eprintln!("Failed to read line: {}", e),
     }
 }
